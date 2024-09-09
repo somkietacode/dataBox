@@ -44,12 +44,12 @@ python app.py
 Accédez à l'application via http://localhost:5000.
 
 ### Principales routes
-/configure : Configure l'application avec un mot de passe initial.
-/login : Page de connexion pour accéder aux fonctionnalités protégées.
-/create_campaign : Créez une nouvelle campagne.
-/collect_data/<nom_campagne> : Collectez les données pour une campagne spécifique.
-/view_campaign/<nom_campagne> : Visualisez les données collectées pour une campagne.
-/delete_campaign : Supprimez une campagne existante.
+- **/configure** : Configure l'application avec un mot de passe initial.
+- **/login** : Page de connexion pour accéder aux fonctionnalités protégées.
+- **/create_campaign** : Créez une nouvelle campagne.
+- **/collect_data/<nom_campagne>** : Collectez les données pour une campagne spécifique.
+- **/view_campaign/<nom_campagne>** : Visualisez les données collectées pour une campagne.
+- **/delete_campaign** : Supprimez une campagne existante.
 
 ### Contribution
 Les contributions à ce projet sont les bienvenues. Si vous avez des suggestions ou des améliorations, veuillez soumettre une pull request ou ouvrir une issue.
