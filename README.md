@@ -1,5 +1,10 @@
 # DataBox
 
+
+Uploading 🎉 Nouveau Service Révolutionnaire pour la Collecte de Données! 🚀.mp4…
+
+
+
 Ce projet est une application web construite avec Flask, permettant la création, la gestion et la collecte de données à travers des campagnes personnalisées. Il intègre des fonctionnalités d'authentification, de création dynamique de champs de données, et de gestion des fichiers associés à chaque campagne. L'objectif est de fournir une plateforme flexible pour collecter des informations structurées via un système de campagnes.
 
 ## Fonctionnalités
