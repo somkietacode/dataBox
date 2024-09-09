@@ -1,0 +1,53 @@
+<style>
+    h2 { margin-top: 20px; }
+    img { max-width: 70%; height: auto; margin-bottom: 20px; margin-left: 12%; }
+    table { width: 80%; border-collapse: collapse; margin-top: 20px; }
+    th, td { padding: 10px; text-align: left; border: 1px solid #ddd; }
+</style>
+<div class="buttons">
+    <button type="button" style="background-color: darkslategray;" onclick="$('#mainView').load('/view_campaign/{{ nom_campagne }}');">
+        <i class="fas fa-arrow-left"></i> Retour
+    </button>
+</div>
+<h1>Analyse de la Campagne : {{ nom_campagne }}</h1>
+
+    <h2>Résumé Statistique</h2>
+    <table>
+        <tr>
+            {% for key in resume_statistique.keys() %}
+                <th>{{ key }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for key, value in resume_statistique.items() %}
+                <td>
+                    <table border="1">
+                        {% for k, v in value.items() %}
+                            <tr><td>{{ k }}</td><td>{{ v }}</td></tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            {% endfor %}
+        </tr>
+    </table>
+
+    <h2>Visualisations</h2>
+    
+    <h3>Outliers</h3>
+    <img src="{{ visualisations['outliers']}}" alt="Outliers">
+
+    <h3>Box plots</h3>
+    {% for chemin_image in visualisations['boxplots'] %}
+        <img src="{{ chemin_image }}" alt="Box plot">
+    {% endfor %}
+    
+    <h3>Nuages de points</h3>
+    {% for chemin_image in visualisations['scatter'] %}
+        <img src="{{ chemin_image }}" alt="Scatter plot">
+    {% endfor %}
+    
+    <h3>Matrice de corrélation</h3>
+    <img src="{{ visualisations['correlation'] }}" alt="Matrice de corrélation">
+    
+    <h3>Analyse en Composantes Principales (ACP)</h3>
+    <img src="{{ visualisations['pca'] }}" alt="ACP">

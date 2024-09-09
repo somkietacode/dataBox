@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataBox</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <nav>
+        <h2>Menu</h2>
+        <a href="#" id="homeLink"><i class="fas fa-home"></i> Accueil</a>
+        <a href="#" id="createCampaignLink"><i class="fas fa-plus-circle"></i> Créer une Campagne</a>
+        <a href="#" id="manageFormAccessLink" ><i class="fa fa-shield-alt"></i> Gestion de l'accès au formulaire</a>
+        <a href="#" id="importCampaignLink"><i class="fas fa-upload"></i> Importer une Campagne</a> <!-- Nouveau lien pour importer -->
+        <a href="/configure" ><i class="fa fa-lock"></i> Réininitialiser mot de passe</a> <!-- Nouveau lien pour importer -->
+        
+    </nav>
+
+    <div class="main-content">
+        <div class="menuHeader">
+            <h2 class="landingText"><i class="fas fa-database"></i> dataBox</h2>
+
+        </div>
+        <div class="mainView" id="mainView">
+            <p>Utilisez les boutons de navigation à gauche pour créer une nouvelle campagne ou suivre l'évolution des campagnes existantes.</p>
+
+            {% if campagnes != [] %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Lien de visualisation</th>
+                        <th>Lien de collecte</th>
+                        <th>Action</th> <!-- Nouvelle colonne pour les actions -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for campagne in campagnes %}
+                        <tr>
+                            <td>{{ campagne }}</td>
+                            <td><a href="#" class="viewCampaignLink" data-campaign="{{ campagne }}">lien</a></td>
+                            <td><a href="/collect_data/{{ campagne }}" target="_blank">lien</a></td>
+                            <td>
+                                <button class="deleteCampaignButton" data-campaign="{{ campagne }}">Supprimer</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p style="color: red;">Vous n'avez pas encore de campagnes!</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#homeLink').click(function(event) {
+                event.preventDefault();
+                $('#mainView').load("{{ url_for('load_home') }}");
+            });
+
+            $('#createCampaignLink').click(function(event) {
+                event.preventDefault();
+                $('#mainView').load("{{ url_for('load_create_campaign') }}");
+            });
+
+            $('#importCampaignLink').click(function(event) {
+                event.preventDefault();
+                $('#mainView').load("{{ url_for('load_import_campaign') }}");
+            });
+
+            $(document).on('submit', '#campaignForm', function(event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        $('#mainView').html(response);
+                    }
+                });
+            });
+
+            $(document).on('submit', '#fieldForm', function(event) {
+                event.preventDefault();
+                var form = $(this);
+                $.ajax({
+                    type: form.attr('method'),
+                    url: form.attr('action'),
+                    data: form.serialize(),
+                    success: function(response) {
+                        $('#mainView').html(response);
+                    }
+                });
+            });
+
+            $(document).on('click', '#finalizeCampaignButton', function(event) {
+                alert('La création de la campagne est terminée!');
+                location.reload();
+            });
+            $(document).on('click', '#manageFormAccessLink', function(event) {
+                $('#mainView').load("{{ url_for('manage_form_access') }}");
+            });
+            
+
+            $(document).on('click', '.viewCampaignLink', function(event) {
+                event.preventDefault();
+                var nom_campagne = $(this).data('campaign');
+                $('#mainView').load('/view_campaign/' + nom_campagne);
+            });
+
+            $('.deleteCampaignButton').click(function() {
+                var campagne = $(this).data('campaign');
+
+                if (confirm('Êtes-vous sûr de vouloir supprimer la campagne ' + campagne + ' ?')) {
+                    $.ajax({
+                        url: '/delete_campaign',
+                        type: 'POST',
+                        data: JSON.stringify({ campagne: campagne }),
+                        contentType: 'application/json',
+                        success: function(response) {
+                            alert('Campagne supprimée avec succès');
+                            location.reload();
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Erreur lors de la suppression de la campagne');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

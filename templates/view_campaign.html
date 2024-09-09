@@ -1,0 +1,136 @@
+<div class="campaign-details">
+    <div class="buttons">
+        <button type="button" style="background-color: darkslategray;" onclick="location.reload();">
+            <i class="fas fa-arrow-left"></i> Retour
+        </button>
+    </div>
+    <h2>Campagne : {{ campagne.nom_campagne }}</h2>
+
+    <!-- Boutons de nettoyage et de déduplication -->
+    
+    <div class="buttons">
+        <button type="button" onclick="cleanData('{{ campagne.nom_campagne }}')">Nettoyage des Données</button>
+        <button type="button" onclick="deduplicateData('{{ campagne.nom_campagne }}')">Déduplication des Données</button>
+        <button type="button" onclick="reloadView('{{ campagne.nom_campagne }}')">Recharger la Vue</button>
+        <button type="button" onclick="analyzeData('{{ campagne.nom_campagne }}')">Analyse des Données</button>
+        <button type="button" onclick="exportToExcel('{{ campagne.nom_campagne }}')">Exporter en CSV</button>
+    </div>
+    
+
+    <h3>Contenu</h3>
+    
+    <table>
+        <thead>
+            <tr>
+                {% for key in campagne.champs['Field'].keys() %}
+                    <th>{{ key }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        {% if campagne.data %}
+        <tbody>
+            {% for row in campagne.data %}
+            <tr>
+                {% for key in campagne.champs['Field'].keys() %}
+                    {% if key in row %}
+                            <td>{{ row[key] }}</td>
+                    {% else %}
+                        {% if campagne.champs['Field'][key] in ['audio', 'image', 'video', 'fichier'] %}
+                            <td>
+                                <a href="{{ '/download_file/'+campagne.nom_campagne+'/' + key + '/' + row['ID']|string }}" download>
+                                    <i class="fas fa-download"></i>
+                                </a>
+                            </td>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+        {% else %}
+            <p>Aucune donnée disponible pour cette campagne.</p>
+        {% endif %}
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    function analyzeData(campagne) {
+        $.ajax({
+            url: '/analyze_data/' + campagne,
+            type: 'POST',
+            success: function(response) {
+                alert('Analyse des données effectuée avec succès');
+                $('#mainView').html(response);
+            },
+            error: function(xhr, status, error) {
+                alert('Erreur lors de l\'analyse des données');
+            }
+        });
+    }
+    function reloadView(campagne) {
+        $('#mainView').load('/view_campaign/' + campagne);
+    }
+    function cleanData(campagne) {
+        $.ajax({
+            url: '/clean_data/' + campagne,
+            type: 'POST',
+            success: function(response) {
+                alert('Nettoyage des données effectué avec succès');
+                $('#mainView').load('/view_campaign/' + campagne);
+            },
+            error: function(xhr, status, error) {
+                alert('Erreur lors du nettoyage des données');
+            }
+        });
+    }
+
+    function deduplicateData(campagne) {
+        $.ajax({
+            url: '/deduplicate_data/' + campagne,
+            type: 'POST',
+            success: function(response) {
+                alert('Déduplication des données effectuée avec succès');
+                $('#mainView').load('/view_campaign/' + campagne);
+            },
+            error: function(xhr, status, error) {
+                alert('Erreur lors de la déduplication des données');
+            }
+        });
+    }
+    function exportToExcel(campagne) {
+    // Sélectionner le tableau contenant les données de la campagne
+    let table = document.querySelector('.campaign-details table');
+    
+    // Convertir le tableau en chaîne de caractères CSV
+    let csvContent = "";
+    let rows = table.querySelectorAll('tr');
+    
+    rows.forEach(row => {
+        let rowData = [];
+        let cols = row.querySelectorAll('th, td');
+        
+        cols.forEach(col => {
+            rowData.push(col.innerText);
+        });
+        
+        csvContent += rowData.join(",") + "\n";
+    });
+
+    // Convertir le CSV en un Blob
+    let blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Créer un lien de téléchargement pour le fichier Excel
+    let link = document.createElement("a");
+    if (link.download !== undefined) { // Vérification de la compatibilité du navigateur
+        let url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", campagne + ".csv");
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
+
+</script>

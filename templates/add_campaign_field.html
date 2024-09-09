@@ -1,0 +1,43 @@
+<div>
+    <form class="add_fieldForm" id="fieldForm" action="{{ url_for('add_campaign_field') }}" method="post">
+        <input type="hidden" name="nom_campagne" value="{{ nom_campagne }}">
+        <div>
+            <h3>Ajouter un champ d'enquête !</h3>
+            <input type="text" id="nom_champ" name="nom_champ" required placeholder="Nom du champ">
+            <select id="type_champ" name="type_champ" required onchange="toggleOptionsInput()">
+                <option value="texte">Texte</option>
+                <option value="nombre">Nombre</option>
+                <option value="date">Date</option>
+                <option value="boolean">Booléen (Oui/Non)</option>
+                <option value="audio">Fichier Audio</option>
+                <option value="image">Image</option>
+                <option value="video">Vidéo</option>
+                <option value="fichier">Fichier (PDF, DOC, etc.)</option>
+                <option value="choix_multiple">Choix Multiple</option> <!-- Nouvelle option -->
+                <!-- Ajoutez d'autres types de champs si nécessaire -->
+            </select>
+        </div>
+
+        <!-- Champ caché pour entrer les options de choix multiple -->
+        <div id="multipleChoiceOptions" style="display: none;">
+            <label for="options">Options (séparées par des virgules):</label>
+            <input type="text" id="options" name="options" placeholder="Option1, Option2, Option3">
+        </div>
+
+        <button class="formButton" type="submit">Ajouter un autre champ</button>
+        <button class="formButton" id="finalizeCampaignButton">Terminer la création</button>
+    </form>
+</div>
+
+<script>
+    function toggleOptionsInput() {
+        const typeChamp = document.getElementById('type_champ').value;
+        const optionsInput = document.getElementById('multipleChoiceOptions');
+
+        if (typeChamp === 'choix_multiple') {
+            optionsInput.style.display = 'block';
+        } else {
+            optionsInput.style.display = 'none';
+        }
+    }
+</script>

@@ -1,0 +1,84 @@
+
+    <h1 class="mt-5">Gestion des campagnes</h1>
+    <p>Gérer l'accès à vos formulaires de collecte de données :</p>
+
+    {% if campagnes != [] %}
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Code d'accès</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for campagne in campagnes %}
+                    <tr>
+                        <td>{{ campagne }}</td>
+                        <td>
+                            <div class="password-container">
+                                <input type="password" id="password_{{ campagne }}" placeholder="Entrez le mot de passe" value="{{campagnes_password[campagne]}}" class="form-control"/>
+                                <i class="fas fa-eye" onclick="togglePassword('{{ campagne }}')"></i>
+                            </div>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary formButton" onclick="configureAccess('{{ campagne }}')">Configurer</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p style="color: red;">Vous n'avez pas encore de campagnes!</p>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script>
+        function togglePassword(campagne) {
+            const passwordField = document.getElementById('password_' + campagne);
+            const icon = passwordField.nextElementSibling;
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordField.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function configureAccess(campagne) {
+            const password = document.getElementById('password_' + campagne).value;
+            if (password) {
+                fetch('/manage_form_access', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'  // Ajoutez ceci si vous utilisez CSRF protection
+                    },
+                    body: JSON.stringify({
+                        campagne: campagne,
+                        password: password
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Mot de passe configuré avec succès pour ' + campagne);
+                        $('#mainView').load("{{ url_for('manage_form_access') }}");
+                    } else {
+                        alert('Erreur lors de la configuration du mot de passe.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur:', error);
+                    alert('Erreur lors de l\'envoi de la requête.');
+                });
+            } else {
+                alert('Veuillez entrer un mot de passe pour ' + campagne);
+            }
+        }
+    </script>

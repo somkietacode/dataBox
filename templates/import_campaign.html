@@ -1,0 +1,12 @@
+<h2>Importer une Campagne</h2>
+<form action="{{ url_for('import_campaign') }}" class="create_campaignForm" method="post" enctype="multipart/form-data">
+    <h3>Donnez un nom à votre campagne!</h3>
+    <input type="text" name="nom_campagne" id="nom_campagne" required>
+    <br><br>
+
+    <h3>Sélectionnez un fichier Excel ou CSV :</h3>
+    <input type="file" name="file" id="file" accept=".xls,.xlsx,.csv" required>
+    <br><br>
+    
+    <button class="formButton" type="submit">Importer</button>
+</form>

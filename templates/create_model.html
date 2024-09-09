@@ -1,0 +1,60 @@
+<div class="container mt-5">
+    <h2>Créer un Modèle Prédictif</h2>
+    <form action="" method="POST">
+
+        <!-- Sélection de la campagne -->
+        <div class="form-group">
+            <label for="nom_campagne">Sélectionnez la campagne :</label>
+            <select class="form-control" id="nom_campagne" name="nom_campagne" required>
+                {% for campagne in campagnes %}
+                    <option value="{{ campagne }}">{{ campagne }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Sélection des caractéristiques -->
+        <div class="form-group" id="features_form">
+            <label for="features">Sélectionnez les caractéristiques (features) :</label>
+            <select class="form-control" id="features" name="features" multiple required>
+                {% for feature in features %}
+                    <option value="{{ feature }}">{{ feature }}</option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Utilisez Ctrl (Cmd sur Mac) pour sélectionner plusieurs caractéristiques.</small>
+        </div>
+
+        <!-- Définition des cibles -->
+        <div class="form-group">
+            <label for="targets">Définissez les cibles (targets) :</label>
+            <select class="form-control" id="targets" name="targets" multiple required>
+                {% for target in targets %}
+                    <option value="{{ target }}">{{ target }}</option>
+                {% endfor %}
+            </select>
+            <small class="form-text text-muted">Utilisez Ctrl (Cmd sur Mac) pour sélectionner plusieurs cibles.</small>
+        </div>
+
+        <!-- Paramètres du modèle -->
+        <div class="form-group">
+            <label for="model_type">Type de Modèle :</label>
+            <select class="form-control" id="model_type" name="model_type" required>
+                <option value="linear_regression">Régression Linéaire</option>
+                <option value="random_forest">Random Forest</option>
+                <option value="gradient_boosting">Gradient Boosting</option>
+                <option value="svm">Support Vector Machine (SVM)</option>
+                <!-- Ajouter d'autres types de modèles si nécessaire -->
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="test_size">Taille de l'échantillon de test :</label>
+            <input type="number" class="form-control" id="test_size" name="test_size" value="0.2" step="0.01" min="0.1" max="0.5" required>
+            <small class="form-text text-muted">Indiquez la proportion des données à utiliser pour le test (ex: 0.2 pour 20%).</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Créer le Modèle</button>
+    </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

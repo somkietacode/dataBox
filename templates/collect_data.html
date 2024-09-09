@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataBox</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-content {
+            margin-top: 20px;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .main-content h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group .radio-group {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 0.25rem;
+        }
+
+        .formButton {
+            background-color: #007bff;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .formButton:hover {
+            background-color: #0056b3;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .radio-group label {
+            margin-right: 1rem;
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .radio-group input {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <header>
+            <h2>Collecte de données pour la campagne : {{ nom_campagne }}</h2>
+        </header>
+        <section id="collect-data">
+            <form method="POST" action="{{ url_for('collect_data', nom_campagne=nom_campagne) }}" enctype="multipart/form-data">
+                {% for champ, type_champ in campagne.champs['Field'].items() %}
+                    <div class="form-group">
+                        <label for="{{ champ }}">{{ champ }}:</label>
+                        {% if type_champ == 'texte' %}
+                            <input type="text" name="{{ champ }}" id="{{ champ }}" class="form-control" required>
+                        {% elif type_champ == 'nombre' %}
+                            <input type="number" step="0.000000001" name="{{ champ }}" id="{{ champ }}" class="form-control" required>
+                        {% elif type_champ == 'date' %}
+                            <input type="date" name="{{ champ }}" id="{{ champ }}" class="form-control" required>
+                        {% elif type_champ == 'boolean' %}
+                            <select name="{{ champ }}" id="{{ champ }}" class="form-control">
+                                <option value="True">Oui</option>
+                                <option value="False">Non</option>
+                            </select>
+                        {% elif type_champ == 'audio' or type_champ == 'image' or type_champ == 'video' or type_champ == 'fichier' %}
+                            <input type="file" name="{{ champ }}" id="{{ champ }}" class="form-control-file" accept="{{ 'audio/*' if type_champ == 'audio' else 'image/*' if type_champ == 'image' else 'video/*' if type_champ == 'video' else '.pdf,.doc,.docx' }}">
+                        {% elif type_champ == 'choix_multiple' %}
+                            {% set options = campagne.champs['MultipleChoices'][champ].split(',') %}
+                            <div class="radio-group">
+                                {% for option in options %}
+                                    <label for="{{ champ }}_{{ option }}">
+                                        <input type="radio" id="{{ champ }}_{{ option }}" name="{{ champ }}" value="{{ option }}">
+                                        {{ option }}
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                <button type="submit" class="formButton">Soumettre</button>
+            </form>
+        </section>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
